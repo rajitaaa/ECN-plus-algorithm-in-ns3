@@ -5,7 +5,7 @@ CO-300 Computer Networks Project
 1. Ramya B. - 16CO239
 2. Rajita Ghosal - 16CO238
 
-# Insturctors
+# Instructors
 Mohit P. Tahiliani , Saumya Hegde, Aurea Fernandes
 
 # About the project
