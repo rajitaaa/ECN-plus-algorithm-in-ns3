@@ -1,0 +1,1160 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 588 768
+%%Title: Enscript Output
+%%For: Sally Floyd
+%%Creator: GNU enscript 1.6.1
+%%CreationDate: Sat Nov  4 14:15:11 2000
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 1
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 1
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+/d_page_w 564 def
+/d_page_h 744 def
+/d_header_x 0 def
+/d_header_y 744 def
+/d_header_w 564 def
+/d_header_h 0 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 564 def
+/d_footer_h 0 def
+/d_output_w 564 def
+/d_output_h 744 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 1 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 665 M
+(Internet Engineering Task Force                              Sally Floyd) s
+5 654 M
+(INTERNET DRAFT                                                     ACIRI) s
+5 643 M
+(draft-ietf-tsvwg-tcp-ecn-00.txt                       K. K. Ramakrishnan) s
+5 632 M
+(                                                      TeraOptic Networks) s
+5 621 M
+(                                                           November 2000) s
+5 610 M
+(                                                      Expires:  May 2001) s
+5 566 M
+(       TCP with ECN: The Treatment of Retransmitted Data Packets) s
+5 511 M
+(                          Status of this Memo) s
+5 478 M
+(   This document is an Internet-Draft and is in full conformance with) s
+5 467 M
+(   all provisions of Section 10 of RFC2026.) s
+5 445 M
+(   Internet-Drafts are working documents of the Internet Engineering) s
+5 434 M
+(   Task Force \(IETF\), its areas, and its working groups.  Note that) s
+5 423 M
+(   other groups may also distribute working documents as Internet-) s
+5 412 M
+(   Drafts.) s
+5 390 M
+(   Internet-Drafts are draft documents valid for a maximum of six months) s
+5 379 M
+(   and may be updated, replaced, or obsoleted by other documents at any) s
+5 368 M
+(   time.  It is inappropriate to use Internet- Drafts as reference) s
+5 357 M
+(   material or to cite them other than as "work in progress.") s
+5 335 M
+(   The list of current Internet-Drafts can be accessed at) s
+5 324 M
+(   http://www.ietf.org/ietf/1id-abstracts.txt) s
+5 302 M
+(   The list of Internet-Draft Shadow Directories can be accessed at) s
+5 291 M
+(   http://www.ietf.org/shadow.html.) s
+5 269 M
+(Abstract) s
+5 247 M
+(   This document makes recommendations for the use of ECN with) s
+5 236 M
+(   retransmitted data packets, for an ECN-capable TCP connection.  This) s
+5 225 M
+(   document supplements RFC 2481 [RFC2481], which did not address the) s
+5 214 M
+(   issue of retransmitted data packets.  This document recommends that) s
+5 203 M
+(   for ECN-capable TCP implementations, the ECT bit \(ECN-Capable) s
+5 192 M
+(   Transport\) in the IP header SHOULD NOT be set on retransmitted data) s
+5 181 M
+(   packets, and that the TCP data receiver SHOULD ignore the ECN field) s
+5 170 M
+(   on arriving data packets that are outside of the receiver's current) s
+5 159 M
+(   window.  This is for greater security against denial-of-service) s
+5 148 M
+(   attacks.) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 1]) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 2 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   In addition, this document recommends that the CWR bit \(Congestion) s
+5 654 M
+(   Window Reduced\) in the TCP header SHOULD NOT be set on retransmitted) s
+5 643 M
+(   packets.  When the TCP data sender is ready to set the CWR bit after) s
+5 632 M
+(   reducing the congestion window, it SHOULD set the CWR bit on the) s
+5 621 M
+(   first new data packet that it transmits.) s
+5 599 M
+(1. Introduction) s
+5 577 M
+(   RFC 2481, which describes both the TCP and IP semantics for ECN, does) s
+5 566 M
+(   not make any special mention of retransmitted TCP packets.  It is) s
+5 555 M
+(   important to make special mention of the use of ECN with) s
+5 544 M
+(   retransmitted packets, especially the setting of the ECT bit on) s
+5 533 M
+(   retransmitted packets.  If TCP is allowed to set the ECT bit on) s
+5 522 M
+(   retransmitted data packets, this could open the door for denial-of-) s
+5 511 M
+(   service attacks.) s
+5 489 M
+(   In particular, an attacker capable of spoofing the IP source address) s
+5 478 M
+(   could send data packets with arbitrary sequence numbers, with both) s
+5 467 M
+(   the ECT and CE bits set in the IP header.  On receiving this spoofed) s
+5 456 M
+(   data packet, the TCP data receiver would determine that the data does) s
+5 445 M
+(   not lie in the current receive window, and return a duplicate) s
+5 434 M
+(   acknowledgement.  We define an out-of-window packet at the TCP data) s
+5 423 M
+(   receiver as a data packet that lies outside the receiver's current) s
+5 412 M
+(   window.  On receiving an out-of-window packet, the TCP data receiver) s
+5 401 M
+(   has to decide whether or not to treat the CE bit in the packet header) s
+5 390 M
+(   as a valid indication of congestion, and therefore whether to return) s
+5 379 M
+(   ECN-Echo indications to the TCP data sender.  If the TCP data) s
+5 368 M
+(   receiver ignored the CE bit in an out-of-window packet, then the TCP) s
+5 357 M
+(   data sender would not receive this possibly-legitimate indication of) s
+5 346 M
+(   congestion, resulting in a violation of end-to-end congestion) s
+5 335 M
+(   control.  On the other hand, if the TCP data receiver honors the CE) s
+5 324 M
+(   indication in the out-of-window packet, and reports the indication of) s
+5 313 M
+(   congestion to the TCP data sender, then the malicious node that) s
+5 302 M
+(   created the spoofed, out-of-window packet has successfully) s
+5 291 M
+(   ``attacked'' the TCP connection by forcing the data sender to) s
+5 280 M
+(   unnecessarily reduce \(halve\) its congestion window.  To prevent such) s
+5 269 M
+(   a denial-of-service attack, Section 2 of this document recommends) s
+5 258 M
+(   that a legitimate TCP data sender SHOULD NOT set the ECT bit on) s
+5 247 M
+(   retransmitted data packets, and that the TCP data receiver SHOULD) s
+5 236 M
+(   ignore the CE bit on out-of-window packets.) s
+5 214 M
+(2.  ECN and Retransmitted Data Packets) s
+5 192 M
+(   In this document we assume an environment where it is possible for a) s
+5 181 M
+(   malicious host to spoof the legitimate IP source address of a TCP) s
+5 170 M
+(   connection, and to send a data packet with the spoofed source address) s
+5 159 M
+(   along with the ECT and CE bits set.  In order to protect itself) s
+5 148 M
+(   against a denial-of-service attack, the TCP connection has to refrain) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 2]) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 3 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   from halving its congestion window in response to such a spoofed data) s
+5 654 M
+(   packet.) s
+5 632 M
+(   There are several possible ways that a TCP connection could protect) s
+5 621 M
+(   itself from such a denial-of-service attack:) s
+5 599 M
+(      \(1\) Not using ECN on retransmits: The TCP receiver could ignore) s
+5 588 M
+(      the CE bit on out-of-window packets, knowing that a conformant) s
+5 577 M
+(      sender would not set the ECT bit on retransmitted packets.) s
+5 555 M
+(      \(2\) Ignoring ECN on out-of-window packets: The TCP receiver could) s
+5 544 M
+(      ignore the CE bit on out-of-window packets, knowing that a) s
+5 533 M
+(      conformant sender would not set the ECT bit on retransmitted) s
+5 522 M
+(      packets.) s
+5 500 M
+(      \(3\) Ignoring ECN on significantly out-of-window packets: The TCP) s
+5 489 M
+(      receiver could ignore the CE bit on packets far outside the) s
+5 478 M
+(      current window, while a conformant sender could be allowed to set) s
+5 467 M
+(      the ECT bit on retransmitted packets.) s
+5 445 M
+(      \(4\) Verifying out-of-window ECN packets: The TCP receiver could) s
+5 434 M
+(      report to the sender the sequence numbers of an out-of-window data) s
+5 423 M
+(      packet with the CE bit set, and the sender could halve its) s
+5 412 M
+(      congestion window only if it had in fact recently sent this) s
+5 401 M
+(      packet.) s
+5 379 M
+(   In this document we discuss each of these four proposals, and explain) s
+5 368 M
+(   why we follow the first proposal, to not use ECN on retransmitted) s
+5 357 M
+(   data packets \(by not setting the ECT bit on these packets\), for ECN-) s
+5 346 M
+(   Capable TCP implementations.) s
+5 324 M
+(2.1.   Option 1:  Not Using ECN on Retransmits.) s
+5 302 M
+(   This document recommends Option 1, not using ECN on retransmitted) s
+5 291 M
+(   packets.  This approach is simple, straightforward, and protects) s
+5 280 M
+(   against ECN-based denial-of-service attacks.  \(This assumes that the) s
+5 269 M
+(   attacker is unable to guess the initial sequence number \(ISN\) of a) s
+5 258 M
+(   TCP connection, and therefore is unlikely to guess a sequence number) s
+5 247 M
+(   for a spoofed packet that is within the current window.\)) s
+5 225 M
+(   The drawback of Option 1 is that it denies ECN protection for) s
+5 214 M
+(   retransmitted packets.  However, for an ECN-capable TCP connection in) s
+5 203 M
+(   a fully-ECN-capable environment with mild congestion, packets should) s
+5 192 M
+(   rarely be dropped due to congestion in the first place, and so) s
+5 181 M
+(   instances of retransmitted packets should rarely arise.  If packets) s
+5 170 M
+(   are being retransmitted, then there are already packet losses \(from) s
+5 159 M
+(   corruption or from congestion\) that ECN has been unable to prevent.) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 3]) s
+_R
+S
+%%Page: (4) 4
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 4 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   We note that, with Option 1, if the router sets the CE bit for an) s
+5 654 M
+(   ECN-capable data packet within a TCP connection, then the TCP) s
+5 643 M
+(   connection is guaranteed to receive that indication of congestion, or) s
+5 632 M
+(   to receive some other indication of congestion within the same window) s
+5 621 M
+(   of data, even if this packet is dropped or reordered in the network.) s
+5 610 M
+(   We consider two cases, when the packet is later retransmitted, and) s
+5 599 M
+(   when the packet is not later retransmitted.) s
+5 577 M
+(   In the first case, if the packet is either dropped or delayed, and at) s
+5 566 M
+(   some point retransmitted by the data sender, then the retransmission) s
+5 555 M
+(   is a result of a Fast Retransmit or a Retransmit Timeout for either) s
+5 544 M
+(   that packet or for some prior packet in the same window of data.  In) s
+5 533 M
+(   this case, because the data sender already has retransmitted this) s
+5 522 M
+(   packet, we know that the data sender has already responded to an) s
+5 511 M
+(   indication of congestion for some packet within the same window of) s
+5 500 M
+(   data as the original packet.  Thus, even if this retransmitted packet) s
+5 489 M
+(   is dropped in the network, or is delayed, with the CE bit set, and is) s
+5 478 M
+(   later ignored by the data receiver as an out-of-window packet, this) s
+5 467 M
+(   is not a problem, because the sender has already responded to an) s
+5 456 M
+(   indication of congestion for that window of data. Communicating the) s
+5 445 M
+(   indication of congestion with the CE bit for this retransmitted) s
+5 434 M
+(   packet \(if that indication is provided to the sender within the same) s
+5 423 M
+(   window of data as a previously dropped packet\) would not have) s
+5 412 M
+(   resulted in any further reduction of the window by the sender.) s
+5 390 M
+(   In the second case, if the packet is never retransmitted by the data) s
+5 379 M
+(   sender, then this data packet is the only copy of this data received) s
+5 368 M
+(   by the data receiver, and therefore arrives at the data receiver as) s
+5 357 M
+(   an in-window packet, regardless of how much the packet might be) s
+5 346 M
+(   delayed or reordered.  In this case, if the CE bit is set on the) s
+5 335 M
+(   packet within the network, this will be treated by the data receiver) s
+5 324 M
+(   as a valid indication of congestion.) s
+5 302 M
+(2.2.   Option 2:  Ignoring ECN on Out-of-window Packets?) s
+5 280 M
+(   A second option for protecting against ECN-based denial-of-service) s
+5 269 M
+(   attacks would be for the TCP data sender to be allowed to set the CE) s
+5 258 M
+(   bit on retransmitted packets, but for the TCP data receiver to ignore) s
+5 247 M
+(   the CE bit on out-of-window data packets.  However, this would have) s
+5 236 M
+(   the unfortunate consequence of weakening the effectiveness of ECN-) s
+5 225 M
+(   based end-to-end congestion control \(by carrying over to ECN some of) s
+5 214 M
+(   the existing weaknesses of packet drops as indications of) s
+5 203 M
+(   congestion\).) s
+5 181 M
+(   We will say that a retransmitted TCP packet is ``necessarily-) s
+5 170 M
+(   retransmitted'' if the retransmission is the only copy of this data) s
+5 159 M
+(   received at the TCP receiver, and ``unnecessarily-retransmitted'') s
+5 148 M
+(   otherwise.  For TCP, drops of unnecessarily-retransmitted data) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 4]) s
+_R
+S
+%%Page: (5) 5
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 5 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   packets are not detected as indications of congestion by the TCP end) s
+5 654 M
+(   nodes.  That is, if a necessarily-retransmitted TCP packet is) s
+5 643 M
+(   dropped, then the packet loss is detected by the TCP receiver, and) s
+5 632 M
+(   TCP reduces its sending rate.  In contrast, if an unnecessarily-) s
+5 621 M
+(   retransmitted TCP packet is dropped, then that loss is not detected) s
+5 610 M
+(   by the TCP receiver, and TCP does not reduce its sending rate.) s
+5 588 M
+(   Option 2, of ignoring ECN on out-of-window packets, would effectively) s
+5 577 M
+(   prevent ECN-based denial-of-service attacks using retransmitted) s
+5 566 M
+(   packets.  At the same time, allowing the data receiver to ignore ECN) s
+5 555 M
+(   information on out-of-window packets would carry over to ECN the) s
+5 544 M
+(   weaknesses of packet drops as indications of congestion: that packet) s
+5 533 M
+(   drops of unnecessarily-retransmitted packets are not detected as) s
+5 522 M
+(   indications of congestion by the TCP end hosts.  With Option 2, a) s
+5 511 M
+(   necessarily-retransmitted TCP packet would be in-window when received) s
+5 500 M
+(   at the TCP receiver, and ECN indications in the packet header would) s
+5 489 M
+(   be treated normally by the TCP receiver.  However, an unnecessarily-) s
+5 478 M
+(   retransmitted TCP packet would most likely be out-of-window when) s
+5 467 M
+(   received at the TCP receiver, and therefore, with Option 2, any ECN) s
+5 456 M
+(   information in the packet header would be ignored.  Setting the ECT) s
+5 445 M
+(   bit on unnecessarily-retransmitted TCP packets has the potential that) s
+5 434 M
+(   routers would mark rather than drop such packets. A receiver ignoring) s
+5 423 M
+(   the CE bit on such a packet would result in not communicating the) s
+5 412 M
+(   congestion indication to the TCP sender, making the ECN information) s
+5 401 M
+(   as unreliable as packet drops for unnecessarily-retransmitted) s
+5 390 M
+(   packets.  However, it is not sufficient for ECN to be merely as) s
+5 379 M
+(   reliable as packet losses as indications of congestion.  An attempt) s
+5 368 M
+(   by a congested router to avoid dropping the unnecessarily-) s
+5 357 M
+(   retransmitted packet and provide an indication of congestion via ECN) s
+5 346 M
+(   would be negated by Option 2.  With Option 2, a transport would) s
+5 335 M
+(   communicate that it is ECN-capable by setting the ECT bit, but would) s
+5 324 M
+(   ignore the CE bit.  In addition to violating the semantics of ECN,) s
+5 313 M
+(   this could also have an impact on other flows, both in terms of) s
+5 302 M
+(   fairness and the possible congestion experienced by such other flows.) s
+5 280 M
+(   The principle has already been established for TCP that the ECT bit) s
+5 269 M
+(   should not be set on a packet if there will be no viable congestion-) s
+5 258 M
+(   control response by the transport to a router setting the CE bit in) s
+5 247 M
+(   the packet header.  Consider the example of pure acknowledgement) s
+5 236 M
+(   \(ACK\) packets.  TCP does not have effective, loss-based end-to-end) s
+5 225 M
+(   congestion control for ACK packets, that is, packets that don't) s
+5 214 M
+(   contain any data.  If a pure ACK packet in a TCP connection is) s
+5 203 M
+(   dropped, the TCP connection does not respond by reducing its sending) s
+5 192 M
+(   rate along that path.  Because current TCP receivers have no) s
+5 181 M
+(   mechanisms for reducing traffic on the ACK-path in response to) s
+5 170 M
+(   congestion notification, RFC 2481 specifies that the ECT bit should) s
+5 159 M
+(   not be set on pure ACK packets.) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 5]) s
+_R
+S
+%%Page: (6) 6
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 6 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   Therefore, our view is that Option 2 is not a viable option for) s
+5 654 M
+(   preventing ECN-based denial-of-service attacks on a connection.) s
+5 632 M
+(2.3.   Option 3: Ignoring ECN on significantly out-of-window packets:) s
+5 610 M
+(   With Option 3, the TCP data sender would be allowed to set the CE bit) s
+5 599 M
+(   on retransmitted packets, and the TCP connection would protect itself) s
+5 588 M
+(   from ECN on spoofed packets by checking the sequence numbers of out-) s
+5 577 M
+(   of-window packets that arrive with the CE bit set.  Consider a data) s
+5 566 M
+(   receiver that has acknowledged data up to and including sequence) s
+5 555 M
+(   number N, and has a window of W bytes.  If the out-of-window data is) s
+5 544 M
+(   contained within the sequence number range \(N-W, N] \(modulo the) s
+5 533 M
+(   proper amount\), then the CE bit on the out-of-window packet is) s
+5 522 M
+(   treated as a valid indication of congestion, and otherwise the CE bit) s
+5 511 M
+(   on the out-of-window packet is ignored.  This is based on the view) s
+5 500 M
+(   that the receiver considers the range \(N-W, N] to represent a range) s
+5 489 M
+(   of data that could plausibly result from retransmissions from the) s
+5 478 M
+(   legitimate data source.) s
+5 456 M
+(   Option 3 would make it somewhat easier for a malicious host to guess) s
+5 445 M
+(   a sequence-number range for which a CE bit would be treated as a) s
+5 434 M
+(   valid indication of congestion, and therefore would make an ECN-based) s
+5 423 M
+(   denial-of-service attack somewhat more likely to be successful.) s
+5 412 M
+(   However, Option 3 would still offer a significant protection against) s
+5 401 M
+(   denial-of-service attacks because the malicious host has to guess the) s
+5 390 M
+(   appropriate sequence number range.) s
+5 368 M
+(   However, Option 3 introduces some additional complexity at the TCP) s
+5 357 M
+(   data receiver, and would not necessarily result in the CE bit being) s
+5 346 M
+(   respected on all data packets actually sent by the legitimate data) s
+5 335 M
+(   sender.  While Option 3 has the benefit over Option 1 of allowing the) s
+5 324 M
+(   sender to set the ECT bit on retransmitted packets, the benefit does) s
+5 313 M
+(   not seem worth the additional cost at the data receiver.) s
+5 291 M
+(2.4.   Option 4:  Verifying out-of-window ECN packets?) s
+5 269 M
+(   With Option 4, the TCP data sender would be allowed to set the CE bit) s
+5 258 M
+(   on retransmitted packets, and the TCP connection would protect itself) s
+5 247 M
+(   from ECN on spoofed packets by having the data receiver report to the) s
+5 236 M
+(   data sender the sequence numbers of the data in out-of-window packets) s
+5 225 M
+(   with the CE bit set.  Using this sequence-number information, the) s
+5 214 M
+(   data sender could verify that it had actually sent this retransmitted) s
+5 203 M
+(   packet before honoring the ECN indication of congestion.  If the data) s
+5 192 M
+(   sender determined that this packet was in fact from another host that) s
+5 181 M
+(   had spoofed its IP address, then the data sender could ignore this) s
+5 170 M
+(   indication of congestion.) s
+5 148 M
+(   At first glance this seems simple, but Option 4 would actually turn) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 6]) s
+_R
+S
+%%Page: (7) 7
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 7 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   into something rather complicated.  The ECN-Echo information is) s
+5 654 M
+(   carried from the data receiver to the data sender not just in one ACK) s
+5 643 M
+(   packet, but possibly in a number of successive ACK packets.  In) s
+5 632 M
+(   addition, the data receiver could receive multiple data packets with) s
+5 621 M
+(   the CE bit set, which are treated by the data sender as a single) s
+5 610 M
+(   instance of congestion.  The benefits of Option 4 do not seem likely) s
+5 599 M
+(   to be worth the extra complexity that would be entailed.  In) s
+5 588 M
+(   addition, this would require significant additional changes to the) s
+5 577 M
+(   header and to the standardization process for such use.) s
+5 555 M
+(   In summary, this document recommends Option 1, that the ECT bit) s
+5 544 M
+(   SHOULD NOT be set on retransmitted data packets, and that the TCP) s
+5 533 M
+(   data receiver SHOULD ignore the ECN field on out-of-window data) s
+5 522 M
+(   packets.) s
+5 500 M
+(3.  Setting the CWR bit.) s
+5 478 M
+(   RFC 2481 says the following regarding the setting of the CWR bit:) s
+5 467 M
+(   ``When an ECN-Capable TCP reduces its congestion window for any) s
+5 456 M
+(   reason \(because of a retransmit timeout, a Fast Retransmit, or in) s
+5 445 M
+(   response to an ECN Notification\), the TCP sets the CWR flag in the) s
+5 434 M
+(   TCP header of the first data packet sent after the window reduction.) s
+5 423 M
+(   If that data packet is dropped in the network, then the sending TCP) s
+5 412 M
+(   will have to reduce the congestion window again and retransmit the) s
+5 401 M
+(   dropped packet.  Thus, the Congestion Window Reduced message is) s
+5 390 M
+(   reliably delivered to the data receiver.") s
+5 368 M
+(   However, as noted earlier in this document, if a retransmitted data) s
+5 357 M
+(   packet is dropped in the network, the sending TCP does not) s
+5 346 M
+(   necessarily respond by reducing its congestion window.  Therefore,) s
+5 335 M
+(   the CWR bit SHOULD NOT be set on retransmitted packets.  Instead,) s
+5 324 M
+(   when the TCP data sender is ready to set the CWR bit after reducing) s
+5 313 M
+(   the congestion window, it SHOULD set the CWR bit on the first *new*) s
+5 302 M
+(   data packet that it subsequently transmits.) s
+5 280 M
+(4.  ECN and window probes.) s
+5 258 M
+(   When the TCP data receiver advertises a zero window, the TCP data) s
+5 247 M
+(   sender sends window probes to determine if the receiver's window has) s
+5 236 M
+(   increased.  Window probe packets do not contain any user data except) s
+5 225 M
+(   for the sequence number, which is a byte.  Because window probes use) s
+5 214 M
+(   the exact sequence numbers, they cannot be easily spoofed in denial-) s
+5 203 M
+(   of-service attacks.  Therefore, if a window probe arrives with ECT) s
+5 192 M
+(   and CE set, then the receiver SHOULD respond to the ECN indications.) s
+5 170 M
+(   At the same time, if a window probe packet is dropped in the network,) s
+5 159 M
+(   this loss is not detected by the receiver.  Therefore, the TCP data) s
+5 148 M
+(   sender SHOULD NOT set either the ECT or CWR bits on window probe) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 7]) s
+_R
+S
+%%Page: (8) 8
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 8 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(   packets.) s
+5 643 M
+(5.  Conclusions) s
+5 621 M
+(   This document recommends that for ECN-capable TCP implementations,) s
+5 610 M
+(   the ECT bit SHOULD NOT be set on retransmitted data packets, and that) s
+5 599 M
+(   the TCP data receiver SHOULD ignore the ECN field on out-of-window) s
+5 588 M
+(   data packets.  This is for greater security against denial-of-service) s
+5 577 M
+(   attacks.) s
+5 555 M
+(   In addition, this document recommends that the CWR bit \(Congestion) s
+5 544 M
+(   Window Reduced\) in the TCP header SHOULD NOT be set on retransmitted) s
+5 533 M
+(   packets.  When the TCP data sender is ready to set the CWR bit after) s
+5 522 M
+(   reducing the congestion window, it SHOULD set the CWR bit on the) s
+5 511 M
+(   first *new* data packet that it transmits.) s
+5 489 M
+(   Finally, this document recommends that a TCP data sender SHOULD NOT) s
+5 478 M
+(   set either the ECT or CWR bits on window probe packets.) s
+5 456 M
+(6. Acknowledgements) s
+5 434 M
+(   This note resulted from email discussions with a number of people,) s
+5 423 M
+(   including Alexey Kuznetsov, Jamal Hadi-Salim, and Venkat Venkatsubra.) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 8]) s
+_R
+S
+%%Page: (9) 9
+%%BeginPageSetup
+_S
+24 24 translate
+/pagenum 9 def
+/fname (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/fdir () def
+/ftail (draft-ietf-tsvwg-tcp-ecn-00.txt) def
+/user_header_p false def
+%%EndPageSetup
+5 698 M
+(draft-tsvwg-tcp-ecn-00        TCP with ECN                 November 2000) s
+5 665 M
+(7. References) s
+5 632 M
+(   [RFC2481] K. Ramakrishnan, S. Floyd, A Proposal to add Explicit) s
+5 621 M
+(   Congestion Notification \(ECN\) to IP, RFC 2481, January 1999.) s
+5 599 M
+(8. Security Considerations) s
+5 577 M
+(   Security considerations have been addressed in the main body of the) s
+5 566 M
+(   document.) s
+5 544 M
+(AUTHORS' ADDRESSES) s
+5 511 M
+(   K. K. Ramakrishnan) s
+5 500 M
+(   TeraOptic Networks) s
+5 489 M
+(   Phone: +1 \(408\) 666-8650) s
+5 478 M
+(   Email: kk@teraoptic.com) s
+5 456 M
+(   Sally Floyd) s
+5 445 M
+(   Phone: +1 \(510\) 666-2989) s
+5 434 M
+(   ACIRI) s
+5 423 M
+(   Email: floyd@aciri.org) s
+5 412 M
+(   URL: http://www.aciri.org/floyd/) s
+5 379 M
+(   This draft was created in November 2000.) s
+5 368 M
+(   It expires May 2001.) s
+5 104 M
+(Floyd and Ramakrishnan        Experimental                      [Page 9]) s
+_R
+S
+%%Trailer
+%%Pages: 9
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
