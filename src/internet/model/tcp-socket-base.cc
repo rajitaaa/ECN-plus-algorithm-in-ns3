@@ -2059,15 +2059,32 @@ TcpSocketBase::ProcessSynSent (Ptr<Packet> packet, const TcpHeader& tcpHeader)
   else if (tcpflags & (TcpHeader::SYN | TcpHeader::ACK)
            && m_tcb->m_nextTxSequence + SequenceNumber32 (1) == tcpHeader.GetAckNumber ())
     { // Handshake completed
-      NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
-      m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
-      m_state = ESTABLISHED;
-      m_connected = true;
-      m_retxEvent.Cancel ();
-      m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
-      m_tcb->m_highTxMark = ++m_tcb->m_nextTxSequence;
-      m_txBuffer->SetHeadSequence (m_tcb->m_nextTxSequence);
-      SendEmptyPacket (TcpHeader::ACK);
+
+      if( m_ecnMode == EcnMode_t::ClassicEcn && m_tcb->m_ecnState == TcpSocketState::ECN_CE_RCVD)   //If a SYN-ACK packet is marked by router
+      {
+          NS_LOG_DEBUG ("cwnd changed to 1 SMSS");
+          m_tcb->m_cWnd = 1 * m_tcb->m_segmentSize;
+          m_tcb->m_cWndInfl = m_tcb->m_cWnd;
+          m_tcb->m_highTxMark = ++m_tcb->m_nextTxSequence;
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+          m_state = ESTABLISHED;
+          m_connected = true;
+          m_retxEvent.Cancel ();
+          m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
+          m_txBuffer->SetHeadSequence (m_tcb->m_nextTxSequence);
+          SendEmptyPacket (TcpHeader::ACK | TcpHeader::ECE);
+      }
+      else {
+          NS_LOG_DEBUG ("SYN_SENT -> ESTABLISHED");
+          m_congestionControl->CongestionStateSet (m_tcb, TcpSocketState::CA_OPEN);
+          m_state = ESTABLISHED;
+          m_connected = true;
+          m_retxEvent.Cancel ();
+          m_rxBuffer->SetNextRxSequence (tcpHeader.GetSequenceNumber () + SequenceNumber32 (1));
+          m_tcb->m_highTxMark = ++m_tcb->m_nextTxSequence;
+          m_txBuffer->SetHeadSequence (m_tcb->m_nextTxSequence);
+          SendEmptyPacket (TcpHeader::ACK);
+        }
 
       /* Check if we received an ECN SYN-ACK packet. Change the ECN state of sender to ECN_IDLE if receiver has sent an ECN SYN-ACK
        * packet and the  traffic is ECN Capable
