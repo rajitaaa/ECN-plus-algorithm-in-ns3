@@ -1,0 +1,7 @@
+useEcn 1
+queue_disc_type ns3::RedQueueDisc
+stream  1
+transport_prot ns3::TcpNewReno
+dataSize 1446
+delAckCount 2
+stopTime 10

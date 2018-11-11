@@ -1,0 +1,13 @@
+
+Stat for Queue 1
+Packets/Bytes received: 803 / 1200006
+Packets/Bytes enqueued: 803 / 1200006
+Packets/Bytes dequeued: 803 / 1200006
+Packets/Bytes requeued: 0 / 0
+Packets/Bytes dropped: 0 / 0
+Packets/Bytes dropped before enqueue: 0 / 0
+Packets/Bytes dropped after dequeue: 0 / 0
+Packets/Bytes sent: 803 / 1200006
+Packets/Bytes marked: 281 / 420938
+  Forced mark: 259 / 387982
+  Unforced mark: 22 / 32956
