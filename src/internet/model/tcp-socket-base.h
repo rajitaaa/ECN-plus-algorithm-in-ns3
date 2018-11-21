@@ -486,7 +486,8 @@ public:
   typedef enum
     {
       NoEcn = 0,   //!< ECN is not enabled.
-      ClassicEcn   //!< ECN functionality as described in RFC 3168.
+      ClassicEcn,   //!< ECN functionality as described in RFC 3168.
+      EcnPlus        //!< ECN+ functionality.
     } EcnMode_t;
 
   /**
@@ -532,7 +533,7 @@ public:
   /**
    * \brief Set ECN mode to use on the socket
    *
-   * \param ecnMode Mode of ECN. Currently NoEcn and ClassicEcn is supported.
+   * \param ecnMode Mode of ECN. Currently NoEcn, ClassicEcn and EcnPlus is supported.
    */
   void SetEcn (EcnMode_t ecnMode);
 

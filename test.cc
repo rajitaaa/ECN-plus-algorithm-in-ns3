@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
 
   CommandLine cmd;
   cmd.AddValue ("stream", "Seed value for random variable", stream);
-  cmd.AddValue ("transport_prot", "Transport protocol to use: TcpNewReno, "
+  cmd.AddValue ("transport_prot", "Transport protocol to fuse: TcpNewReno, "
                 "TcpHybla, TcpHighSpeed, TcpHtcp, TcpVegas, TcpScalable, TcpVeno, "
                 "TcpBic, TcpYeah, TcpIllinois, TcpWestwood, TcpWestwoodPlus, TcpLedbat, "
                 "TcpLp", transport_prot);
@@ -218,7 +218,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::InitialCwnd", UintegerValue (10));
   Config::SetDefault ("ns3::TcpSocket::DelAckCount", UintegerValue (delAckCount));
   Config::SetDefault ("ns3::TcpSocket::SegmentSize", UintegerValue (dataSize));
-  Config::SetDefault ("ns3::TcpSocketBase::EcnMode",StringValue("ClassicEcn"));
+  Config::SetDefault ("ns3::TcpSocketBase::EcnMode",StringValue("EcnPlus"));
   Config::SetDefault ("ns3::RedQueueDisc::UseEcn", BooleanValue (useEcn));
   Config::SetDefault ("ns3::RedQueueDisc::ARED", BooleanValue (true));
   Config::SetDefault ("ns3::RedQueueDisc::Gentle", BooleanValue (true));
